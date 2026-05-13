@@ -377,8 +377,13 @@ function ClimateApp() {
   };
   const aT1 = allRegionAvg('temp', 1), aT2 = allRegionAvg('temp', 2);
   const aP1 = allRegionAvg('precip', 1), aP2 = allRegionAvg('precip', 2);
-  const aTD = (aT1 !== null && aT2 !== null) ? aT2 - aT1 : null;
-  const aPD = (aP1 !== null && aP2 !== null) ? aP2 - aP1 : null;
+  // 표시되는 반올림된 평균값으로 증감 계산
+  const aT1R = aT1 !== null ? Math.round(aT1 * 10) / 10 : null;
+  const aT2R = aT2 !== null ? Math.round(aT2 * 10) / 10 : null;
+  const aP1R = aP1 !== null ? Math.round(aP1) : null;
+  const aP2R = aP2 !== null ? Math.round(aP2) : null;
+  const aTD = (aT1R !== null && aT2R !== null) ? aT2R - aT1R : null;
+  const aPD = (aP1R !== null && aP2R !== null) ? aP2R - aP1R : null;
 
   const renderCell = (region, type, period) => {
     const { value, count } = getAvg(region, type, period);
@@ -508,8 +513,13 @@ function ClimateApp() {
                   const d = data[region] || {};
                   const t1 = getAvg(region, 'temp', 1), t2 = getAvg(region, 'temp', 2);
                   const p1 = getAvg(region, 'precip', 1), p2 = getAvg(region, 'precip', 2);
-                  const tD = (t1.value !== null && t2.value !== null) ? t2.value - t1.value : null;
-                  const pD = (p1.value !== null && p2.value !== null) ? p2.value - p1.value : null;
+                  // 표시되는 반올림된 값으로 증감 계산 (㉡-㉠, ㉣-㉢)
+                  const t1R = t1.value !== null ? Math.round(t1.value * 10) / 10 : null;
+                  const t2R = t2.value !== null ? Math.round(t2.value * 10) / 10 : null;
+                  const p1R = p1.value !== null ? Math.round(p1.value) : null;
+                  const p2R = p2.value !== null ? Math.round(p2.value) : null;
+                  const tD = (t1R !== null && t2R !== null) ? t2R - t1R : null;
+                  const pD = (p1R !== null && p2R !== null) ? p2R - p1R : null;
                   const canClick = hasYearlyData(region);
                   return (
                     <tr key={region} onClick={() => handleRowClick(region)} className={`${canClick ? 'cursor-pointer hover:bg-sky-50' : ''} ${d.isExample ? 'bg-red-50/40' : ''} transition-colors`}>
@@ -623,7 +633,10 @@ function ClimateApp() {
                 const fmt = chartType === 'temp' ? fmtTemp : fmtPrecip;
                 const fmtD = chartType === 'temp' ? fmtTempD : fmtPrecipD;
                 const unit = chartType === 'temp' ? '℃' : 'mm';
-                const delta = (v1 !== null && v2 !== null) ? v2 - v1 : null;
+                // 표시되는 반올림된 값으로 증감 계산
+                const v1Round = v1 !== null ? (chartType === 'temp' ? Math.round(v1 * 10) / 10 : Math.round(v1)) : null;
+                const v2Round = v2 !== null ? (chartType === 'temp' ? Math.round(v2 * 10) / 10 : Math.round(v2)) : null;
+                const delta = (v1Round !== null && v2Round !== null) ? v2Round - v1Round : null;
                 const dc = delta === null ? 'text-slate-400' : (chartType === 'temp' ? (delta > 0 ? 'text-red-600' : delta < 0 ? 'text-blue-600' : 'text-slate-600') : (delta > 0 ? 'text-blue-600' : delta < 0 ? 'text-red-600' : 'text-slate-600'));
                 return (
                   <>
